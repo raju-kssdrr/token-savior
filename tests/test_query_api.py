@@ -409,7 +409,7 @@ class TestFileQueryFunctions:
 
     def test_get_dependencies(self):
         deps = self.funcs["get_dependencies"]("Engine.run")
-        assert "helper" in deps
+        assert any(d.get("name") == "helper" for d in deps)
 
     def test_get_dependencies_empty(self):
         deps = self.funcs["get_dependencies"]("helper")
@@ -417,11 +417,11 @@ class TestFileQueryFunctions:
 
     def test_get_dependencies_not_found(self):
         deps = self.funcs["get_dependencies"]("nonexistent")
-        assert any("Error" in str(d) for d in deps)
+        assert any("error" in str(d).lower() for d in deps)
 
     def test_get_dependents(self):
         dependents = self.funcs["get_dependents"]("helper")
-        assert "Engine.run" in dependents
+        assert any(d.get("name") == "Engine.run" for d in dependents)
 
     def test_search_lines(self):
         results = self.funcs["search_lines"]("def ")
@@ -592,31 +592,37 @@ class TestProjectQueryFunctions:
 
     def test_get_dependencies(self):
         deps = self.funcs["get_dependencies"]("Engine.run")
-        assert "helper" in deps
+        assert any(d.get("name") == "helper" for d in deps)
 
     def test_get_dependents(self):
         deps = self.funcs["get_dependents"]("Engine.run")
-        assert "Runner.execute" in deps
+        assert any(d.get("name") == "Runner.execute" for d in deps)
 
     def test_get_call_chain(self):
-        chain = self.funcs["get_call_chain"]("Runner.execute", "helper")
-        assert chain == ["Runner.execute", "Engine.run", "helper"]
+        result = self.funcs["get_call_chain"]("Runner.execute", "helper")
+        assert "chain" in result
+        names = [s.get("name", s) for s in result["chain"]]
+        assert names == ["Runner.execute", "Engine.run", "helper"]
 
     def test_get_call_chain_direct(self):
-        chain = self.funcs["get_call_chain"]("Engine.run", "helper")
-        assert chain == ["Engine.run", "helper"]
+        result = self.funcs["get_call_chain"]("Engine.run", "helper")
+        assert "chain" in result
+        names = [s.get("name", s) for s in result["chain"]]
+        assert names == ["Engine.run", "helper"]
 
     def test_get_call_chain_same(self):
-        chain = self.funcs["get_call_chain"]("helper", "helper")
-        assert chain == ["helper"]
+        result = self.funcs["get_call_chain"]("helper", "helper")
+        assert "chain" in result
+        names = [s.get("name", s) for s in result["chain"]]
+        assert names == ["helper"]
 
     def test_get_call_chain_no_path(self):
-        chain = self.funcs["get_call_chain"]("helper", "main")
-        assert "Error" in chain[0]
+        result = self.funcs["get_call_chain"]("helper", "main")
+        assert "error" in result
 
     def test_get_call_chain_unknown_source(self):
-        chain = self.funcs["get_call_chain"]("nonexistent", "helper")
-        assert "Error" in chain[0]
+        result = self.funcs["get_call_chain"]("nonexistent", "helper")
+        assert "error" in result
 
     def test_get_file_dependencies(self):
         deps = self.funcs["get_file_dependencies"]("src/runner_mod.py")
@@ -651,9 +657,11 @@ class TestProjectQueryFunctions:
 
     def test_get_change_impact(self):
         impact = self.funcs["get_change_impact"]("helper")
-        assert "Engine.run" in impact["direct"]
+        direct_names = [d.get("name", d) if isinstance(d, dict) else d for d in impact["direct"]]
+        transitive_names = [d.get("name", d) if isinstance(d, dict) else d for d in impact["transitive"]]
+        assert "Engine.run" in direct_names
         # Transitive: Runner.execute depends on Engine.run
-        assert "Runner.execute" in impact["transitive"]
+        assert "Runner.execute" in transitive_names
 
     def test_get_change_impact_no_dependents(self):
         # main has no reverse dependents in our graph
