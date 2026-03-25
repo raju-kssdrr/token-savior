@@ -1,5 +1,5 @@
 # mcp-codebase-index - Structural codebase indexer with MCP server
-# Copyright (C) 2026 Mibayy
+# Copyright (C) 2026 Michael Doyle
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by

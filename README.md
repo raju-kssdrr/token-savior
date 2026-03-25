@@ -1,6 +1,8 @@
 
+<!-- mcp-name: io.github.MikeRecognex/mcp-codebase-index -->
 # mcp-codebase-index
 
+[![CI](https://github.com/MikeRecognex/mcp-codebase-index/actions/workflows/ci.yml/badge.svg)](https://github.com/MikeRecognex/mcp-codebase-index/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/mcp-codebase-index)](https://pypi.org/project/mcp-codebase-index/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
@@ -301,7 +303,7 @@ ruff check src/ tests/
 
 ## References
 
-
+The structural indexer was originally developed as part of the [RMLPlus](https://github.com/MikeRecognex/RMLPlus) project, an implementation of the [Recursive Language Models](https://arxiv.org/abs/2512.24601) framework.
 
 ## License
 
